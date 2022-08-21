@@ -17,7 +17,13 @@ const getUserById = async (req, res) => {
       return;
     }
     res.status(200).send(user);
-  } catch (err) { res.status(500).send({ message: err.message, ...err }); }
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      res.status(400).send({ message: 'Неправильный id пользователя' });
+      return;
+    }
+    res.status(500).send({ message: err.message, ...err });
+  }
 };
 
 const createUser = async (req, res) => {
