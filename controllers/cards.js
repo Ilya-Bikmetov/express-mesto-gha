@@ -5,7 +5,7 @@ const getCards = async (req, res) => {
   try {
     res.status(200).send(cards);
   } catch (err) {
-    res.status(500).send({ message: 'На сервере произошла ошибка', ...err });
+    res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
@@ -19,7 +19,7 @@ const createCard = async (req, res) => {
     const card = await Card.create({ name, link, owner });
     res.status(200).send(card);
   } catch (err) {
-    res.status(500).send({ message: 'На сервере произошла ошибка', ...err });
+    res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
@@ -33,7 +33,7 @@ const deleteCard = async (req, res) => {
     }
     res.status(200).send(card);
   } catch (err) {
-    res.status(500).send({ message: 'На сервере произошла ошибка', ...err });
+    res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
