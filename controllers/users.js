@@ -45,13 +45,7 @@ const updateProfile = async (req, res) => {
       res.status(400).send({ message: 'Переданы некорректные данные' });
       return;
     }
-    const user = await User.findByIdAndUpdate(
-      id,
-      { name, about },
-      {
-        new: true,
-      },
-    );
+    const user = await User.findByIdAndUpdate(id, { name, about }, { new: true });
     if (!user) {
       res.status(404).send({ message: 'Пользователь с указанным id не найден' });
       return;
@@ -73,7 +67,7 @@ const updateAvatar = async (req, res) => {
       return;
     }
     res.status(200).send(user);
-  } catch (err) { res.status(500).send({ message: 'На сервере произошла ошибка', ...err }); }
+  } catch (err) { res.status(500).send({ message: 'На сервере произошла ошибка' }); }
 };
 
 module.exports = {
