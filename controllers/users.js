@@ -10,7 +10,6 @@ const getUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   const { id } = req.params;
-
   try {
     if (!id) {
       res.status(400).send(error400);
@@ -31,12 +30,13 @@ const createUser = async (req, res) => {
   const { name, about, avatar } = req.body;
   try {
     const user = await User.create({ name, about, avatar });
-    if (!user) {
-      res.status(400).send(error400);
-      return;
+    return res.status(200).send(user);
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      return res.status(400).send(error400);
     }
-    res.status(200).send(user);
-  } catch (err) { res.status(500).send(error500); }
+    return res.status(500).send(error500);
+  }
 };
 
 const updateProfile = async (req, res) => {
