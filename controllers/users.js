@@ -54,7 +54,7 @@ const updateProfile = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).json({ message: 'Пользователь с указанным id не найден' });
+      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
       return;
     }
     res.status(resOk).send(user);
@@ -74,8 +74,8 @@ const updateAvatar = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (user !== true || user === {}) {
-      res.status(errorNotFound).json({ message: 'Пользователь с указанным id не найден' });
+    if (!user) {
+      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
       return;
     }
     res.status(resOk).send(user);
@@ -88,10 +88,15 @@ const updateAvatar = async (req, res) => {
   }
 };
 
+const processUknownRoutes = (req, res) => {
+  res.status(errorNotFound).send({ message: 'Такого запроса не существует' });
+};
+
 module.exports = {
   getUsers,
   createUser,
   getUserById,
   updateProfile,
   updateAvatar,
+  processUknownRoutes,
 };
