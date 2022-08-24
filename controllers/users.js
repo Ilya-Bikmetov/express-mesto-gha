@@ -54,7 +54,7 @@ const updateProfile = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).send(JSON.stringify({ message: 'Пользователь с указанным id не найден' }));
+      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
       return;
     }
     res.status(resOk).send(user);
@@ -75,7 +75,7 @@ const updateAvatar = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).send(JSON.stringify({ message: 'Пользователь с указанным id не найден' }));
+      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
       return;
     }
     res.status(resOk).send(user);
