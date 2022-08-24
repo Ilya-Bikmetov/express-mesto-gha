@@ -5,25 +5,25 @@
 
 ### В проекте используется:
 
-:white_check_mark: Framework `Express.js` для реализации сервера.
-:white_check_mark: `MongoDB` для хранения данных.
-:white_check_mark: `mongoose` для подключения к серверу mongo
-:white_check_mark: методы `CRUD`
-:white_check_mark: тип `ObjectId` и метод `populate` для настройки связей между схемами
-:white_check_mark: реализована обработка ошибок запросов
+:white_check_mark: Framework `Express.js` для реализации сервера.  
+:white_check_mark: `MongoDB` для хранения данных.  
+:white_check_mark: `mongoose` для подключения к серверу mongo  
+:white_check_mark: методы `CRUD`  
+:white_check_mark: тип `ObjectId` и метод `populate` для настройки связей между схемами  
+:white_check_mark: реализована обработка ошибок запросов  
 
 ### Реализованы запросы по следующим роутам:
 
-`GET` /users — возвращает всех пользователей из базы.
-`GET` /users/:userId — возвращает пользователя по _id.
-`POST` /users — создаёт пользователя с переданными в теле запроса name , about и avatar.
-`PATCH` /users/me — обновляет профиль пользователя.
-`PATCH` /users/me/avatar — обновляет аватар пользователя.
-`GET` /cards — возвращает все карточки из базы.
-`POST` /cards — создаёт карточку с переданными в теле запроса name и link , устанавливает поле owner для карточки.
-`DELETE` /cards/:cardId — удаляет карточку по _id
-`PUT` /cards/:cardId/likes — ставит лайк карточке.
-`DELETE` /cards/:cardId/likes — убирает лайк с карточки.
+* `GET` /users — возвращает всех пользователей из базы.  
+* `GET` /users/:userId — возвращает пользователя по _id.  
+* `POST` /users — создаёт пользователя с переданными в теле запроса name , about и avatar.  
+* `PATCH` /users/me — обновляет профиль пользователя.  
+* `PATCH` /users/me/avatar — обновляет аватар пользователя.  
+* `GET` /cards — возвращает все карточки из базы.  
+* `POST` /cards — создаёт карточку с переданными в теле запроса name и link , устанавливает поле owner для карточки.  
+* `DELETE` /cards/:cardId — удаляет карточку по _id  
+* `PUT` /cards/:cardId/likes — ставит лайк карточке.  
+* `DELETE` /cards/:cardId/likes — убирает лайк с карточки.  
 
 ## Директории:
 
