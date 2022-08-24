@@ -54,12 +54,12 @@ const updateProfile = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
+      res.status(errorNotFound).send(JSON.stringify({ message: 'Пользователь с указанным id не найден' }));
       return;
     }
     res.status(resOk).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
       res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       return;
     }
@@ -68,28 +68,24 @@ const updateProfile = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  const { avatar, id = req.user._id } = req.body;
+  const { avatar, id = 0 } = req.body;
   try {
     const user = await User.findByIdAndUpdate(id, { avatar }, {
       new: true,
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
+      res.status(errorNotFound).send(JSON.stringify({ message: 'Пользователь с указанным id не найден' }));
       return;
     }
     res.status(resOk).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
       res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       return;
     }
     res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
   }
-};
-
-const processUknownRoutes = (req, res) => {
-  res.status(errorNotFound).send({ message: 'Такого запроса не существует' });
 };
 
 module.exports = {
@@ -98,5 +94,4 @@ module.exports = {
   getUserById,
   updateProfile,
   updateAvatar,
-  processUknownRoutes,
 };
