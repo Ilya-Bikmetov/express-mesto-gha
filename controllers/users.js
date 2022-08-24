@@ -1,10 +1,16 @@
 const User = require('../models/user');
+const {
+  errorBadRequest,
+  errorNotFound,
+  errorServer,
+  resOk,
+} = require('../utils/statuses');
 
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    res.status(200).send(users);
-  } catch (err) { res.status(500).send({ message: 'На сервере произошла ошибка' }); }
+    res.status(resOk).send(users);
+  } catch (err) { res.status(errorServer).send({ message: 'На сервере произошла ошибка' }); }
 };
 
 const getUserById = async (req, res) => {
@@ -12,16 +18,16 @@ const getUserById = async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) {
-      res.status(404).send({ message: ' Пользователь по указанному id не найден.' });
+      res.status(errorNotFound).send({ message: ' Пользователь по указанному id не найден.' });
       return;
     }
-    res.status(200).send(user);
+    res.status(resOk).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(400).send({ message: 'Переданы некорректный id пользователя' });
+      res.status(errorBadRequest).send({ message: 'Переданы некорректный id пользователя' });
       return;
     }
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
@@ -29,14 +35,14 @@ const createUser = async (req, res) => {
   const { name, about, avatar } = req.body;
   try {
     const user = await User.create({ name, about, avatar });
-    res.status(200).send(user);
+    res.status(resOk).send(user);
     return;
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные' });
+      res.status(errorBadRequest).send({ message: 'Переданы некорректные данные' });
       return;
     }
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
@@ -48,16 +54,16 @@ const updateProfile = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+      res.status(errorNotFound).json({ message: 'Пользователь с указанным id не найден' });
       return;
     }
-    res.status(200).send(user);
+    res.status(resOk).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       return;
     }
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
@@ -68,17 +74,17 @@ const updateAvatar = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (!user) {
-      res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+    if (user !== true || user === {}) {
+      res.status(errorNotFound).json({ message: 'Пользователь с указанным id не найден' });
       return;
     }
-    res.status(200).send(user);
+    res.status(resOk).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       return;
     }
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
