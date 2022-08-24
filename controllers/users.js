@@ -68,7 +68,7 @@ const updateProfile = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  const { avatar, id = 0 } = req.body;
+  const { avatar, id = req.user._id } = req.body;
   try {
     const user = await User.findByIdAndUpdate(id, { avatar }, {
       new: true,
