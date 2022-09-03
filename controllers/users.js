@@ -1,8 +1,12 @@
+const validator = require('validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   errorBadRequest,
   errorNotFound,
   errorServer,
+  errorUnauthorized,
   resOk,
 } = require('../utils/statuses');
 
@@ -32,11 +36,28 @@ const getUserById = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+
   try {
-    const user = await User.create({ name, about, avatar });
+    if (!validator.isEmail(email)) {
+      res.status(errorBadRequest).send({ message: 'Передан некорректный email' });
+      return;
+    }
+    const hash = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    });
     res.status(resOk).send(user);
-    return;
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(errorBadRequest).send({ message: 'Переданы некорректные данные' });
@@ -88,10 +109,35 @@ const updateAvatar = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(errorUnauthorized).send({ message: 'Неправильный email или пароль' });
+      return;
+    }
+    const isMatched = await bcrypt.compare(password, user.password);
+    if (!isMatched) {
+      res.status(errorUnauthorized).send({ message: 'Неправильный email или пароль' });
+      return;
+    }
+    const token = jwt.sign(
+      { _id: user._id },
+      'some-secret',
+      { expiresIn: '7d' },
+    );
+    res.send({ token });
+  } catch (err) {
+    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
+  }
+};
+
 module.exports = {
   getUsers,
   createUser,
   getUserById,
   updateProfile,
   updateAvatar,
+  login,
 };
