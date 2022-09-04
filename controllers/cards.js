@@ -3,6 +3,7 @@ const {
   errorBadRequest,
   errorNotFound,
   errorServer,
+  errorForbidden,
 } = require('../utils/statuses');
 
 const getCards = async (req, res) => {
@@ -31,12 +32,17 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   const { id } = req.params;
   try {
-    const card = await Card.findByIdAndRemove(id);
+    const card = await Card.findById(id);
     if (!card) {
       res.status(errorNotFound).send({ message: 'Карточка с указанным id не найдена.' });
       return;
     }
-    res.send(card);
+    if (card.owner.valueOf() === req.user._id) {
+      await Card.deleteOne({ _id: id });
+      res.send(card);
+    } else {
+      res.status(errorForbidden).send({ message: 'Карточки другого пользователя удалять запрещено' });
+    }
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(errorBadRequest).send({ message: 'Передан несуществующий id карточки' });

@@ -1,5 +1,6 @@
 const errorBadRequest = 400;
 const errorUnauthorized = 401;
+const errorForbidden = 403;
 const errorNotFound = 404;
 const errorServer = 500;
 module.exports = {
@@ -7,4 +8,5 @@ module.exports = {
   errorNotFound,
   errorServer,
   errorUnauthorized,
+  errorForbidden,
 };

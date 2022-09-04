@@ -7,7 +7,9 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
+const auth = require('../middlewares/auth');
 
+router.use(auth);
 router.get('/', getCards);
 router.post('/', express.json(), createCard);
 router.delete('/:id', deleteCard);
