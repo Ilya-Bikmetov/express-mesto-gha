@@ -3,13 +3,12 @@ const {
   errorBadRequest,
   errorNotFound,
   errorServer,
-  resOk,
 } = require('../utils/statuses');
 
 const getCards = async (req, res) => {
   const cards = await Card.find({}).populate(['owner', 'likes']);
   try {
-    res.status(resOk).send(cards);
+    res.send(cards);
   } catch (err) {
     res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
   }
@@ -19,7 +18,7 @@ const createCard = async (req, res) => {
   const { name, link, owner = req.user._id } = req.body;
   try {
     const card = await Card.create({ name, link, owner });
-    res.status(resOk).send(card);
+    res.send(card);
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при создании карточки' });
@@ -37,7 +36,7 @@ const deleteCard = async (req, res) => {
       res.status(errorNotFound).send({ message: 'Карточка с указанным id не найдена.' });
       return;
     }
-    res.status(resOk).send(card);
+    res.send(card);
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(errorBadRequest).send({ message: 'Передан несуществующий id карточки' });
@@ -59,7 +58,7 @@ const likeCard = async (req, res) => {
       res.status(errorNotFound).send({ message: 'Передан несуществующий id карточки' });
       return;
     }
-    res.status(resOk).send(card);
+    res.send(card);
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(errorBadRequest).send({ message: 'Переданы некорректные данные для постановки лайка' });
@@ -81,7 +80,7 @@ const dislikeCard = async (req, res) => {
       res.status(errorNotFound).send({ message: 'Передан несуществующий id карточки' });
       return;
     }
-    res.status(resOk).send(card);
+    res.send(card);
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(errorBadRequest).send({ message: 'Переданы некорректные данные для снятия лайка' });

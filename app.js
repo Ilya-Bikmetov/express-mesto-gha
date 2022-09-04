@@ -1,3 +1,4 @@
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const { errorNotFound } = require('./utils/statuses');
@@ -10,14 +11,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useUnifiedTopology: false,
 });
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '63021e20b453a1f760429337',
-//   };
-
-//   next();
-// });
-
+app.use(cookieParser());
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
