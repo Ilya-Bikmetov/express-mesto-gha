@@ -1,7 +1,8 @@
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
-const { errorNotFound } = require('./utils/statuses');
+const error = require('./middlewares/error');
+const ErrorNotFound = require('./utils/errors/error_Not_Found');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -16,8 +17,8 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res, next) => {
-  res.status(errorNotFound).send({ message: 'Такого запроса нет' });
-  next();
+  next(new ErrorNotFound('Такого запроса нет'));
 });
+app.use(error);
 
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));

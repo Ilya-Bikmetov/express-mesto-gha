@@ -2,52 +2,51 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const {
-  errorBadRequest,
-  errorNotFound,
-  errorServer,
-  errorUnauthorized,
-} = require('../utils/statuses');
+const ErrorNotFound = require('../utils/errors/error_Not_Found');
+const ErrorBadRequest = require('../utils/errors/error_Bad_Request');
+const ErrorConflict = require('../utils/errors/error_Conflict');
+const ErrorUnauthorized = require('../utils/errors/error_Unauthorized');
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     res.send(users);
-  } catch (err) { res.status(errorServer).send({ message: 'На сервере произошла ошибка' }); }
+  } catch (err) {
+    next(err);
+  }
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const user = await User.findById(id);
     if (!user) {
-      res.status(errorNotFound).send({ message: ' Пользователь по указанному id не найден.' });
-      return;
+      throw new ErrorNotFound('Пользователь по указанному id не найден.');
     }
     res.send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(errorBadRequest).send({ message: 'Переданы некорректный id пользователя' });
+      next(new ErrorBadRequest('Передан некорректный id пользователя'));
       return;
     }
-    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
+    next(err);
   }
 };
 
-const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req, res, next) => {
   const { _id } = req.user;
   try {
     const user = await User.findById(_id);
     if (!user) {
-      throw new Error('Пользователь не найден');
+      throw new ErrorNotFound('Пользователь не найден.');
     }
     res.send({ user });
   } catch (err) {
-    res.status(errorServer).send({ message: err.message });
+    next(err);
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const {
     name,
     about,
@@ -58,8 +57,7 @@ const createUser = async (req, res) => {
 
   try {
     if (!validator.isEmail(email)) {
-      res.status(errorBadRequest).send({ message: 'Передан некорректный email' });
-      return;
+      throw new ErrorBadRequest('Передан некорректный email');
     }
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({
@@ -72,29 +70,27 @@ const createUser = async (req, res) => {
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(errorBadRequest).send({ message: 'Переданы некорректные данные' });
+      next(new ErrorBadRequest('Переданы некорректные данные'));
       return;
     }
     if (err.code === 11000) {
-      res.status(errorBadRequest).send({ message: 'Такой пользователь уже существует' });
+      next(new ErrorConflict('Такой пользователь уже существует'));
       return;
     }
-    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
+    next(err);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      res.status(errorUnauthorized).send({ message: 'Неправильный email или пароль' });
-      return;
+      throw new ErrorUnauthorized('Неправильный email или пароль');
     }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
-      res.status(errorUnauthorized).send({ message: 'Неправильный email или пароль' });
-      return;
+      throw new ErrorUnauthorized('Неправильный email или пароль');
     }
     const token = jwt.sign(
       { _id: user._id },
@@ -107,11 +103,11 @@ const login = async (req, res) => {
     });
     res.send(user);
   } catch (err) {
-    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
+    next(err);
   }
 };
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   const { name, about, id = req.user._id } = req.body;
   try {
     const user = await User.findByIdAndUpdate(id, { name, about }, {
@@ -119,37 +115,38 @@ const updateProfile = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
-      return;
+      throw new ErrorNotFound('Пользователь с указанным id не найден');
     }
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
-      res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      next(new ErrorBadRequest('Переданы некорректные данные при обновлении профиля'));
       return;
     }
-    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
+    next(err);
   }
 };
 
-const updateAvatar = async (req, res) => {
+const updateAvatar = async (req, res, next) => {
   const { avatar, id = req.user._id } = req.body;
   try {
+    if (!avatar) {
+      throw new ErrorBadRequest('Переданы некорректные данные аватара');
+    }
     const user = await User.findByIdAndUpdate(id, { avatar }, {
       new: true,
       runValidators: true,
     });
     if (!user) {
-      res.status(errorNotFound).send({ message: 'Пользователь с указанным id не найден' });
-      return;
+      throw new ErrorNotFound('Пользователь с указанным id не найден');
     }
     res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.kind === 'ObjectId') {
-      res.status(errorBadRequest).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+      next(new ErrorBadRequest('Переданы некорректные данные при обновлении аватара'));
       return;
     }
-    res.status(errorServer).send({ message: 'На сервере произошла ошибка' });
+    next(err);
   }
 };
 
