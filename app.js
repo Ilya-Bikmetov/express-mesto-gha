@@ -21,6 +21,6 @@ app.use('/cards', require('./routes/cards'));
 app.use('*', (req, res, next) => {
   next(new ErrorNotFound('Такого запроса нет'));
 });
-app.use(errors());
 app.use(error);
+app.use(errors());
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
