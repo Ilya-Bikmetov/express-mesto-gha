@@ -68,7 +68,9 @@ const createUser = async (req, res, next) => {
       email,
       password: hash,
     });
-    res.send(user);
+    const responseUser = user.toObject();
+    delete responseUser.password;
+    res.send(responseUser);
   } catch (err) {
     if (err.name === 'ValidationError') {
       next(new ErrorBadRequest('Переданы некорректные данные'));
