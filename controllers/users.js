@@ -85,6 +85,9 @@ const createUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
+    if (!validator.isEmail(email)) {
+      throw new ErrorBadRequest('Передан некорректный email');
+    }
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       throw new ErrorUnauthorized('Неправильный email или пароль');
