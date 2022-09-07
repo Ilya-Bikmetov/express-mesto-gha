@@ -5,7 +5,7 @@ const { errors } = require('celebrate');
 const error = require('./middlewares/error');
 const ErrorNotFound = require('./utils/errors/error_Not_Found');
 const { createUser, login } = require('./controllers/users');
-const { loginValidator } = require('./middlewares/validators');
+const { loginValidator, createUserValidator } = require('./middlewares/validators');
 const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
@@ -18,7 +18,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(cookieParser());
 app.use(express.json());
-app.post('/signup', createUser);
+app.post('/signup', createUserValidator, createUser);
 app.post('/signin', loginValidator, login);
 app.use(auth);
 app.use('/users', require('./routes/users'));
