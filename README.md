@@ -16,8 +16,8 @@
 :white_check_mark: методы `CRUD`  
 :white_check_mark: тип `ObjectId` и метод `populate` для настройки связей между схемами  
 :white_check_mark: реализована обработка ошибок запросов  
-:white_check_mark: добавлена предварительная валидация с использованием middleware `Celebrate`
-:white_check_mark: реализована централизованная обработка ошибок
+:white_check_mark: добавлена предварительная валидация с использованием middleware `Celebrate`  
+:white_check_mark: реализована централизованная обработка ошибок  
 
 
 ### Реализованы запросы по следующим роутам:
