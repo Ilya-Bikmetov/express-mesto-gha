@@ -5,16 +5,16 @@ const {
 } = require('celebrate');
 const { avatarRegExp, cardRegExp } = require('../utils/constants');
 
-const createUserValidator = celebrate({
-  [Segments.BODY]: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().regex(avatarRegExp),
-    email: Joi.string(),
-    password: Joi.string().required(),
+// const createUserValidator = celebrate({
+//   [Segments.BODY]: Joi.object().keys({
+//     name: Joi.string().required().min(2).max(30),
+//     about: Joi.string().required().min(2).max(30),
+//     avatar: Joi.string().required().regex(avatarRegExp),
+//     email: Joi.string().required(),
+//     password: Joi.string().required(),
 
-  }),
-});
+//   }),
+// });
 
 const loginValidator = celebrate({
   [Segments.BODY]: Joi.object().keys({
@@ -44,7 +44,7 @@ const createCardValidator = celebrate({
 });
 
 module.exports = {
-  createUserValidator,
+  // createUserValidator,
   loginValidator,
   updateProfileValidator,
   updateAvatarValidator,
