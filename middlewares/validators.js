@@ -10,7 +10,7 @@ const createUserValidator = celebrate({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
     avatar: Joi.string().required().regex(avatarRegExp),
-    email: Joi.string().required(),
+    email: Joi.string(),
     password: Joi.string().required(),
 
   }),
