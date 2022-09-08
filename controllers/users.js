@@ -1,4 +1,3 @@
-const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -6,7 +5,6 @@ const ErrorNotFound = require('../utils/errors/error_Not_Found');
 const ErrorBadRequest = require('../utils/errors/error_Bad_Request');
 const ErrorConflict = require('../utils/errors/error_Conflict');
 const ErrorUnauthorized = require('../utils/errors/error_Unauthorized');
-const ErrorForbidden = require('../utils/errors/error_Forbidden');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -57,9 +55,6 @@ const createUser = async (req, res, next) => {
   } = req.body;
 
   try {
-    if (!validator.isEmail(email)) {
-      throw new ErrorBadRequest('Передан некорректный email');
-    }
     const hash = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -87,9 +82,6 @@ const createUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    if (!validator.isEmail(email)) {
-      throw new ErrorBadRequest('Передан некорректный email');
-    }
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       throw new ErrorUnauthorized('Неправильный email или пароль');
@@ -116,9 +108,6 @@ const login = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   const { name, about, id = req.user._id } = req.body;
   try {
-    if (id !== req.user._id) {
-      throw new ErrorForbidden('Запрещено обновлять профиль другого пользователя');
-    }
     const user = await User.findByIdAndUpdate(id, { name, about }, {
       new: true,
       runValidators: true,
@@ -141,9 +130,6 @@ const updateAvatar = async (req, res, next) => {
   try {
     if (!avatar) {
       throw new ErrorBadRequest('Переданы некорректные данные аватара');
-    }
-    if (id !== req.user._id) {
-      throw new ErrorForbidden('Запрещено обновлять аватар другого пользователя');
     }
     const user = await User.findByIdAndUpdate(id, { avatar }, {
       new: true,

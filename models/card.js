@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { cardRegExp } = require('../utils/constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,9 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (exp) => cardRegExp.test(exp),
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,12 +24,12 @@ const cardSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'user',
     default: [],
-
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
 });
 
 module.exports = mongoose.model('card', cardSchema);
