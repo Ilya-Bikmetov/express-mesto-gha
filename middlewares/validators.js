@@ -3,12 +3,13 @@ const {
   Joi,
   Segments,
 } = require('celebrate');
+const { avatarRegExp, cardRegExp } = require('../utils/constants');
 
 const createUserValidator = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string(),
+    avatar: Joi.string().regex(avatarRegExp),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
 
@@ -31,14 +32,14 @@ const updateProfileValidator = celebrate({
 
 const updateAvatarValidator = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().regex(avatarRegExp),
   }),
 });
 
 const createCardValidator = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required(),
+    link: Joi.string().required().regex(cardRegExp),
   }),
 });
 
